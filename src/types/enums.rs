@@ -99,9 +99,7 @@ impl fmt::Display for ToolChoiceType {
 #[serde(rename_all = "lowercase")]
 pub enum Modality {
     Text,
-    #[serde(rename = "text")]
     Image,
-    #[serde(rename = "image")]
     Audio,
 }
 

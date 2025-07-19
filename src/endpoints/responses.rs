@@ -1,6 +1,6 @@
 use crate::client::OpenAIClient;
 use crate::error::Result;
-use crate::types::{CreateResponseRequest, Response, DeletedResponse, ResponseList};
+use crate::types::{CreateResponseRequest, Response, DeletedResponse, ResponseList, Model, ReasoningEffort, TruncationType, Modality};
 
 impl OpenAIClient {
     /// Create a new response
@@ -199,17 +199,17 @@ impl<'a> ResponseBuilder<'a> {
         self
     }
 
-    pub fn reasoning(mut self, effort: impl Into<String>) -> Self {
+    pub fn reasoning(mut self, effort: ReasoningEffort) -> Self {
         self.request = self.request.with_reasoning(effort);
         self
     }
 
-    pub fn truncation(mut self, type_: impl Into<String>, last_turns: Option<u32>) -> Self {
+    pub fn truncation(mut self, type_: TruncationType, last_turns: Option<u32>) -> Self {
         self.request = self.request.with_truncation(type_, last_turns);
         self
     }
 
-    pub fn modalities(mut self, modalities: Vec<String>) -> Self {
+    pub fn modalities(mut self, modalities: Vec<Modality>) -> Self {
         self.request = self.request.with_modalities(modalities);
         self
     }

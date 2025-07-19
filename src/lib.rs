@@ -30,11 +30,28 @@ pub mod config;
 pub mod error;
 pub mod types;
 pub mod endpoints;
+pub mod json;
+
+#[cfg(feature = "streaming")]
+pub mod streaming;
+
+#[cfg(feature = "backend-abstraction")]
+pub mod backend;
 
 pub use client::OpenAIClient;
 pub use config::OpenAIConfig;
 pub use error::{OpenAIError, Result};
 pub use types::*;
+pub use json::{AdaptiveJsonParser, JsonCapabilities};
+
+#[cfg(feature = "streaming")]
+pub use streaming::{ResponseStream, StreamingExt};
+
+#[cfg(feature = "backend-abstraction")]
+pub use backend::{HttpBackend, MockBackend, ReqwestBackend, MockResponseExt};
+
+#[cfg(feature = "simd")]
+pub use json::{SimdJsonParser, SimdJsonExt};
 
 /// Re-export commonly used types
 pub mod prelude {
@@ -43,4 +60,7 @@ pub mod prelude {
     pub use crate::error::Result;
     pub use crate::types::*;
     pub use crate::endpoints::ResponseBuilder;
+    
+    #[cfg(feature = "streaming")]
+    pub use crate::streaming::{ResponseStream, StreamingExt};
 }

@@ -101,4 +101,8 @@ tests/rustdoc-gui/src/**.lock
 flake.lock
 /default.nix
 
+# claude related files
+CLAUDE.md
+.claude
+
 # Before adding new lines, see the comment at the top.

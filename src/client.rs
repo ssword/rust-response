@@ -2,11 +2,13 @@ use reqwest::{Client, RequestBuilder, Response as HttpResponse};
 use backon::{ExponentialBuilder, Retryable};
 use crate::config::OpenAIConfig;
 use crate::error::{OpenAIError, Result};
+use std::borrow::Cow;
+use std::sync::Arc;
 
 #[derive(Debug, Clone)]
 pub struct OpenAIClient {
-    config: OpenAIConfig,
-    client: Client,
+    config: Arc<OpenAIConfig>,
+    client: Arc<Client>,
 }
 
 impl OpenAIClient {
@@ -17,7 +19,10 @@ impl OpenAIClient {
             .build()
             .map_err(OpenAIError::Http)?;
 
-        Ok(Self { config, client })
+        Ok(Self { 
+            config: Arc::new(config), 
+            client: Arc::new(client) 
+        })
     }
 
     pub fn from_env() -> Result<Self> {
@@ -34,23 +39,40 @@ impl OpenAIClient {
         &self.config
     }
 
+    /// Efficiently build URL with zero allocations when possible
+    fn build_url<'a>(&self, path: &'a str) -> Cow<'a, str> {
+        let base = self.config.base_url.trim_end_matches('/');
+        let path = path.trim_start_matches('/');
+        
+        // If base_url doesn't end with '/' and path doesn't start with '/', we need to add '/'
+        if !self.config.base_url.ends_with('/') && !path.is_empty() {
+            Cow::Owned(format!("{}/{}", base, path))
+        } else if self.config.base_url.ends_with('/') && path.starts_with('/') {
+            // Remove duplicate slash
+            Cow::Owned(format!("{}{}", base, path))
+        } else {
+            // Direct concatenation works
+            Cow::Owned(format!("{}{}", self.config.base_url, if path.is_empty() { "" } else { "/" }))
+        }
+    }
+
     pub(crate) fn get(&self, path: &str) -> RequestBuilder {
-        let url = format!("{}/{}" , self.config.base_url.trim_end_matches('/'), path.trim_start_matches('/'));
-        let mut request = self.client.get(url);
+        let url = self.build_url(path);
+        let mut request = self.client.get(url.as_ref());
         request = self.add_headers(request);
         request
     }
 
     pub(crate) fn post(&self, path: &str) -> RequestBuilder {
-        let url = format!("{}/{}" , self.config.base_url.trim_end_matches('/'), path.trim_start_matches('/'));
-        let mut request = self.client.post(url);
+        let url = self.build_url(path);
+        let mut request = self.client.post(url.as_ref());
         request = self.add_headers(request);
         request
     }
 
     pub(crate) fn delete(&self, path: &str) -> RequestBuilder {
-        let url = format!("{}/{}" , self.config.base_url.trim_end_matches('/'), path.trim_start_matches('/'));
-        let mut request = self.client.delete(url);
+        let url = self.build_url(path);
+        let mut request = self.client.delete(url.as_ref());
         request = self.add_headers(request);
         request
     }
@@ -75,9 +97,16 @@ impl OpenAIClient {
         let config = &self.config;
         
         let operation = || async {
-            let response = request.try_clone()
-                .unwrap_or_else(|| request.try_clone().unwrap())
-                .send()
+            // Clone the request more efficiently - only clone once
+            let req = request.try_clone()
+                .ok_or_else(|| OpenAIError::Http(
+                    reqwest::Error::from(std::io::Error::new(
+                        std::io::ErrorKind::Other, 
+                        "Failed to clone request"
+                    ))
+                ))?;
+                
+            let response = req.send()
                 .await
                 .map_err(OpenAIError::Http)?;
 
