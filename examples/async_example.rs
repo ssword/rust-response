@@ -1,14 +1,10 @@
-use openai_responses::{OpenAIClient, OpenAIConfig};
+use openai_responses::{OpenAIClient, Model};
 use futures::future::join_all;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    // Initialize client with custom configuration
-    let config = OpenAIConfig::from_env()?
-        .with_timeout(std::time::Duration::from_secs(30))
-        .with_max_retries(2);
-    
-    let client = OpenAIClient::new(config)?;
+    // Initialize client from environment
+    let client = OpenAIClient::from_env()?;
     
     // Create multiple requests concurrently
     let prompts = vec![
@@ -20,7 +16,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let futures: Vec<_> = prompts
         .iter()
         .map(|prompt| {
-            client.create_response_builder("gpt-4.1-nano", *prompt)
+            client.create_response_builder(Model::Gpt4_1Nano, *prompt)
                 .temperature(0.8)
                 .max_tokens(150)
                 .send()

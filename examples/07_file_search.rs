@@ -3,7 +3,7 @@
 //! This example demonstrates how to use file search capabilities
 //! with the Responses API to analyze and search through documents.
 
-use openai_responses::{OpenAIClient, CreateResponseRequest, Tool, ToolFunction};
+use openai_responses::{OpenAIClient, Model, CreateResponseRequest, Tool, ToolFunction};
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
@@ -29,7 +29,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         }),
     };
     
-    let request = CreateResponseRequest::new("gpt-4.1-nano", "Analyze a Rust source code file for code patterns and best practices")
+    let request = CreateResponseRequest::new(Model::Gpt4_1Nano, "Analyze a Rust source code file for code patterns and best practices")
         .with_tools(vec![file_search_tool])
         .with_instructions("Use file search to analyze Rust code files and provide insights.");
     
@@ -67,7 +67,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     "#;
     
     let request = CreateResponseRequest::new(
-        "gpt-4.1-nano", 
+        Model::Gpt4_1Nano,
         &format!("Review this Rust code:\n{}", sample_code)
     )
     .with_tools(code_review_tools)
@@ -115,7 +115,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     "#;
     
     let request = CreateResponseRequest::new(
-        "gpt-4.1-nano",
+        Model::Gpt4_1Nano,
         &format!("Extract documentation from:\n{}", documented_code)
     )
     .with_tools(doc_tools)
@@ -145,7 +145,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     ];
     
     let request = CreateResponseRequest::new(
-        "gpt-4.1-nano",
+        Model::Gpt4_1Nano,
         "Search for all TODO comments in Rust source files"
     )
     .with_tools(search_tools)
@@ -182,7 +182,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     "#;
     
     let request = CreateResponseRequest::new(
-        "gpt-4.1-nano",
+        Model::Gpt4_1Nano,
         &format!("Analyze these logs:\n{}", sample_logs)
     )
     .with_tools(log_analysis_tools)
@@ -225,7 +225,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     "#;
     
     let request = CreateResponseRequest::new(
-        "gpt-4.1-nano",
+        Model::Gpt4_1Nano,
         &format!("Parse this TOML config:\n{}", sample_config)
     )
     .with_tools(config_tools)
@@ -264,7 +264,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     "#;
     
     let request = CreateResponseRequest::new(
-        "gpt-4.1-nano",
+        Model::Gpt4_1Nano,
         &format!("Security scan this code:\n{}", vulnerable_code)
     )
     .with_tools(security_tools)

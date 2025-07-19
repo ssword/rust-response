@@ -1,12 +1,12 @@
-use openai_responses::OpenAIClient;
+use openai_responses::{OpenAIClient, Model};
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let client = OpenAIClient::from_env()?;
-    
+
     // Create a response with background processing
     let response = client
-        .create_response_builder("gpt-4.1-nano", "Write a detailed tutorial about Rust async programming")
+        .create_response_builder(Model::Gpt4_1Nano, "Write a detailed tutorial about Rust async programming")
         .temperature(0.7)
         .max_tokens(500)
         .background(true)

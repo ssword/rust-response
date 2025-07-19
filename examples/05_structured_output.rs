@@ -3,7 +3,7 @@
 //! This example demonstrates how to generate structured, validated JSON responses
 //! using the Responses API with JSON schema validation.
 
-use openai_responses::OpenAIClient;
+use openai_responses::{OpenAIClient, Model};
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -44,6 +44,12 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     
     println!("=== Structured Output with JSON Schema ===\n");
     
+    // Check if the model supports JSON mode
+    let model = Model::Gpt4_1Nano;
+    if !model.supports_json_mode() {
+        println!("⚠️  Model {} doesn't support JSON mode. Using a compatible model instead.", model.as_str());
+    }
+
     // Example 1: Person profile generation
     println!("1. Person profile generation:");
     let schema = r#"{
@@ -61,9 +67,9 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         },
         "required": ["name", "age", "email", "skills"]
     }"#;
-    
+
     let response = client
-        .create_response_builder("gpt-4.1-nano", "Generate a profile for a senior Rust developer")
+        .create_response_builder(model, "Generate a profile for a senior Rust developer")
         .instructions(&format!("Return valid JSON matching this schema: {}", schema))
         .max_tokens(200)
         .send()
@@ -103,7 +109,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     }"#;
     
     let response = client
-        .create_response_builder("gpt-4.1-nano", "Create a recipe for chocolate chip cookies")
+        .create_response_builder(Model::Gpt4_1Nano, "Create a recipe for chocolate chip cookies")
         .instructions(&format!("Return valid JSON matching this schema: {}", recipe_schema))
         .max_tokens(300)
         .send()
@@ -136,7 +142,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     
     let text = "I absolutely love the new Rust async features! The performance improvements are incredible, though the learning curve was a bit steep at first.";
     let response = client
-        .create_response_builder("gpt-4.1-nano", &format!("Analyze this text: {}", text))
+        .create_response_builder(Model::Gpt4_1Nano, &format!("Analyze this text: {}", text))
         .instructions(&format!("Return valid JSON matching this schema: {}", sentiment_schema))
         .max_tokens(150)
         .send()

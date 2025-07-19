@@ -3,7 +3,7 @@
 //! This example demonstrates how to use web search capabilities
 //! with the Responses API to get real-time information.
 
-use openai_responses::{OpenAIClient, CreateResponseRequest, Tool, ToolFunction};
+use openai_responses::{OpenAIClient, Model, CreateResponseRequest, Tool, ToolFunction};
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
@@ -29,7 +29,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         }),
     };
     
-    let request = CreateResponseRequest::new("gpt-4.1-nano", "What are the latest developments in Rust programming language in 2024?")
+    let request = CreateResponseRequest::new(Model::Gpt4_1Nano, "What are the latest developments in Rust programming language in 2024?")
         .with_tools(vec![web_search_tool])
         .with_instructions("Use web search to find the most recent information about Rust developments.");
     
@@ -39,7 +39,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Example 2: Technology news aggregation
     println!("2. Technology news aggregation:");
     let tech_search_request = CreateResponseRequest::new(
-        "gpt-4.1-nano", 
+        Model::Gpt4_1Nano,
         "Find recent AI breakthroughs and summarize the key points"
     )
     .with_tools(vec![
@@ -66,7 +66,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Example 3: Market research
     println!("3. Market research with web search:");
     let market_research = CreateResponseRequest::new(
-        "gpt-4.1-nano",
+        Model::Gpt4_1Nano,
         "What is the current market share of programming languages in 2024?"
     )
     .with_tools(vec![
@@ -93,7 +93,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Example 4: Real-time data analysis
     println!("4. Real-time data analysis:");
     let realtime_analysis = CreateResponseRequest::new(
-        "gpt-4.1-nano",
+        Model::Gpt4_1Nano,
         "Analyze the current state of the Rust ecosystem"
     )
     .with_tools(vec![
@@ -120,7 +120,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Example 5: Comparative analysis
     println!("5. Comparative web search analysis:");
     let comparative_search = CreateResponseRequest::new(
-        "gpt-4.1-nano",
+        Model::Gpt4_1Nano,
         "Compare Rust vs Go performance benchmarks in 2024"
     )
     .with_tools(vec![
@@ -148,7 +148,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Example 6: News summarization pipeline
     println!("6. News summarization pipeline:");
     let news_pipeline = CreateResponseRequest::new(
-        "gpt-4.1-nano",
+        Model::Gpt4_1Nano,
         "Summarize the top 5 tech news stories from this week"
     )
     .with_tools(vec![
@@ -176,7 +176,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Example 7: Research assistant workflow
     println!("7. Research assistant workflow:");
     let research_workflow = CreateResponseRequest::new(
-        "gpt-4.1-nano",
+        Model::Gpt4_1Nano,
         "Create a research report on quantum computing applications in 2024"
     )
     .with_tools(vec![

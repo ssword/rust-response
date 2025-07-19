@@ -3,7 +3,7 @@
 //! This example demonstrates how to maintain conversation context
 //! across multiple turns using the Responses API.
 
-use openai_responses::{OpenAIClient, CreateResponseRequest};
+use openai_responses::{OpenAIClient, Model};
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
@@ -18,7 +18,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     
     // Turn 1: Initial greeting
     let response1 = client
-        .create_response_builder("gpt-4.1-nano", "Hello! I'm learning Rust programming.")
+        .create_response_builder(Model::Gpt4_1Nano, "Hello! I'm learning Rust programming.")
         .instructions("You are a helpful Rust programming tutor. Be encouraging and provide practical examples.")
         .send()
         .await?;
@@ -31,7 +31,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Turn 2: Follow-up question
     let context = format!("Previous conversation: {:?}\n\nUser: What are the main benefits of Rust?", conversation_history);
     let response2 = client
-        .create_response_builder("gpt-4.1-nano", "What are the main benefits of Rust?")
+        .create_response_builder(Model::Gpt4_1Nano, "What are the main benefits of Rust?")
         .instructions(&format!("Previous context: {}\nContinue the conversation naturally.", context))
         .send()
         .await?;
@@ -44,7 +44,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Turn 3: Specific technical question
     let context = format!("Full conversation history: {:?}\n\nUser: Can you show me a simple ownership example?", conversation_history);
     let response3 = client
-        .create_response_builder("gpt-4.1-nano", "Can you show me a simple ownership example?")
+        .create_response_builder(Model::Gpt4_1Nano, "Can you show me a simple ownership example?")
         .instructions(&format!("Based on the previous discussion: {}\nProvide a clear ownership example.", context))
         .max_tokens(200)
         .send()
@@ -69,7 +69,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         .join("\n");
     
     let response = client
-        .create_response_builder("gpt-4.1-nano", &conversation_prompt)
+        .create_response_builder(Model::Gpt4_1Nano, &conversation_prompt)
         .instructions("Continue this mentoring conversation naturally.")
         .send()
         .await?;
@@ -104,7 +104,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             
             let context = self.history.join("\n");
             let response = self.client
-                .create_response_builder("gpt-4.1-nano", message)
+                .create_response_builder(Model::Gpt4_1Nano, message)
                 .instructions(&format!("Conversation context:\n{}\n\nRespond naturally.", context))
                 .max_tokens(150)
                 .send()

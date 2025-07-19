@@ -3,7 +3,7 @@
 //! This example demonstrates how to use function calling capabilities
 //! with the Responses API to enable external tool usage.
 
-use openai_responses::{OpenAIClient, CreateResponseRequest, Tool, ToolFunction};
+use openai_responses::{OpenAIClient, Model, CreateResponseRequest, Tool, ToolFunction};
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
@@ -36,7 +36,13 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         }),
     };
     
-    let request = CreateResponseRequest::new("gpt-4.1-nano", "What's the weather like in Tokyo?")
+    // Check if the model supports function calling
+    let model = Model::Gpt4_1Nano;
+    if !model.supports_function_calling() {
+        println!("⚠️  Model {} doesn't support function calling. Using a compatible model instead.", model.as_str());
+    }
+
+    let request = CreateResponseRequest::new(model, "What's the weather like in Tokyo?")
         .with_tools(vec![weather_tool])
         .with_instructions("Use the provided weather function to answer the question.");
     
@@ -78,7 +84,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         },
     ];
     
-    let request = CreateResponseRequest::new("gpt-4.1-nano", "Calculate 15 + 27 and then multiply by 3")
+    let request = CreateResponseRequest::new(Model::Gpt4_1Nano, "Calculate 15 + 27 and then multiply by 3")
         .with_tools(calc_tools)
         .with_instructions("Use the provided calculator functions to solve the problem step by step.");
     
@@ -119,7 +125,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         },
     ];
     
-    let request = CreateResponseRequest::new("gpt-4.1-nano", "Find users named Alice and get their statistics")
+    let request = CreateResponseRequest::new(Model::Gpt4_1Nano, "Find users named Alice and get their statistics")
         .with_tools(db_tools)
         .with_instructions("Use the database functions to find users and get their stats.");
     
@@ -193,7 +199,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         },
     ];
     
-    let request = CreateResponseRequest::new("gpt-4.1-nano", "Get Apple's stock price and convert it to EUR for 100 shares")
+    let request = CreateResponseRequest::new(Model::Gpt4_1Nano, "Get Apple's stock price and convert it to EUR for 100 shares")
         .with_tools(workflow_tools)
         .with_instructions("Use multiple functions to solve this investment query step by step.");
     
