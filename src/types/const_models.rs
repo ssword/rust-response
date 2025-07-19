@@ -3,17 +3,95 @@ use serde::{Deserialize, Serialize};
 use crate::types::{CreateResponseRequest, ValidationError, ReasoningEffort, Modality, Model};
 use std::str::FromStr;
 
-/// Trait to define model capabilities at the type level
+/// Trait defining model capabilities at the type level for compile-time validation.
+///
+/// This trait enables compile-time checking of model capabilities, ensuring that
+/// only supported features are used with each model. It uses associated constants
+/// to define what each model can do, allowing the type system to enforce these
+/// constraints.
+///
+/// # Examples
+///
+/// ```rust
+/// use openai_responses::{ModelCapabilities, O1, Gpt4_1};
+///
+/// // Check capabilities at compile time
+/// const O1_SUPPORTS_REASONING: bool = O1::SUPPORTS_REASONING; // true
+/// const GPT4_SUPPORTS_REASONING: bool = Gpt4_1::SUPPORTS_REASONING; // false
+///
+/// // Use in generic functions
+/// fn can_use_reasoning<M: ModelCapabilities>() -> bool {
+///     M::SUPPORTS_REASONING
+/// }
+/// ```
+///
+/// # Implementation
+///
+/// Implement this trait for each model type to define its capabilities:
+///
+/// ```rust
+/// use openai_responses::ModelCapabilities;
+///
+/// pub struct MyCustomModel;
+/// impl ModelCapabilities for MyCustomModel {
+///     const SUPPORTS_REASONING: bool = true;
+///     const SUPPORTS_VISION: bool = false;
+///     const SUPPORTS_JSON: bool = true;
+///     const SUPPORTS_FUNCTIONS: bool = true;
+///     const MAX_CONTEXT_WINDOW: usize = 100_000;
+///     const MODEL_NAME: &'static str = "my-custom-model";
+/// }
+/// ```
 pub trait ModelCapabilities {
+    /// Whether the model supports advanced reasoning capabilities
     const SUPPORTS_REASONING: bool;
+
+    /// Whether the model supports vision/image processing
     const SUPPORTS_VISION: bool;
+
+    /// Whether the model supports JSON mode output
     const SUPPORTS_JSON: bool;
+
+    /// Whether the model supports function calling
     const SUPPORTS_FUNCTIONS: bool;
+
+    /// Maximum context window size in tokens
     const MAX_CONTEXT_WINDOW: usize;
+
+    /// API name for the model
     const MODEL_NAME: &'static str;
 }
 
-/// Typed model wrapper that enforces capabilities at compile time
+/// Typed model wrapper that enforces capabilities at compile time.
+///
+/// This wrapper provides a zero-cost abstraction over model types that
+/// enables compile-time capability checking. It uses phantom types to
+/// associate model capabilities with the type system.
+///
+/// # Examples
+///
+/// ```rust
+/// use openai_responses::{TypedModel, O1, Gpt4_1};
+///
+/// // Create typed model instances
+/// let o1_model: TypedModel<O1> = TypedModel::new();
+/// let gpt4_model: TypedModel<Gpt4_1> = TypedModel::new();
+///
+/// // Check capabilities at compile time
+/// assert!(TypedModel::<O1>::supports_reasoning());
+/// assert!(!TypedModel::<Gpt4_1>::supports_reasoning());
+/// ```
+///
+/// # Zero-Cost Abstraction
+///
+/// `TypedModel` has no runtime overhead - it's a zero-sized type that
+/// only exists at compile time to enforce type safety.
+///
+/// # Serialization
+///
+/// The model serializes to its API string representation and can be
+/// deserialized back, with validation that the string matches the
+/// expected model name.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub struct TypedModel<M: ModelCapabilities>(PhantomData<M>);
 

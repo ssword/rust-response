@@ -3,11 +3,103 @@ use crate::types::{CreateResponseRequest, ValidationError, Model};
 use crate::client::OpenAIClient;
 use crate::error::Result;
 
-/// Type-state markers for compile-time validation
+/// Marker type for unvalidated request builders.
+///
+/// In this state, the builder can be modified but cannot be built into
+/// a final request. The builder must be validated first.
+///
+/// # Examples
+///
+/// ```rust
+/// use openai_responses::{Model, TypedRequestBuilder};
+///
+/// // Builder starts in Unvalidated state
+/// let builder = TypedRequestBuilder::new(Model::Gpt4_1Nano, "Hello");
+/// // Can modify the builder
+/// let builder = builder.temperature(0.7);
+/// // Must validate before building
+/// let validated = builder.validate()?;
+/// ```
 pub struct Unvalidated;
+
+/// Marker type for validated request builders.
+///
+/// In this state, the builder has passed all validation checks and
+/// can be built into a final request for sending to the API.
+///
+/// # Examples
+///
+/// ```rust
+/// use openai_responses::{Model, TypedRequestBuilder};
+///
+/// let validated_builder = TypedRequestBuilder::new(Model::Gpt4_1Nano, "Hello")
+///     .temperature(0.7)
+///     .validate()?;
+///
+/// // Now can build the final request
+/// let request = validated_builder.build();
+/// ```
 pub struct Validated;
 
-/// Type-safe request builder using phantom types
+/// Type-state pattern builder for compile-time request validation.
+///
+/// This builder uses Rust's type system to ensure that requests are properly
+/// validated before they can be sent to the API. The type-state pattern
+/// prevents invalid requests from being constructed at compile time.
+///
+/// # Type States
+///
+/// The builder progresses through different type states:
+/// 1. `TypedRequestBuilder<Unvalidated>` - Initial state, can be modified
+/// 2. `TypedRequestBuilder<Validated>` - Validated state, ready to send
+///
+/// # Examples
+///
+/// ```rust
+/// use openai_responses::{Model, TypedRequestBuilder, ReasoningEffort};
+///
+/// // Start with unvalidated builder
+/// let builder = TypedRequestBuilder::new(Model::Gpt4_1Nano, "Hello");
+///
+/// // Add configuration (still unvalidated)
+/// let builder = builder
+///     .temperature(0.7)
+///     .max_tokens(100);
+///
+/// // Validate and transition to validated state
+/// let validated_builder = builder.validate()?;
+///
+/// // Build the final request
+/// let request = validated_builder.build();
+/// ```
+///
+/// # Compile-Time Safety
+///
+/// The type system prevents common mistakes:
+///
+/// ```rust,compile_fail
+/// use openai_responses::{Model, TypedRequestBuilder};
+///
+/// let builder = TypedRequestBuilder::new(Model::Gpt4_1Nano, "Hello");
+/// // This won't compile - must validate first!
+/// let request = builder.build(); // ERROR: method not available
+/// ```
+///
+/// # Model-Specific Validation
+///
+/// The builder automatically validates that requested features are supported
+/// by the selected model:
+///
+/// ```rust
+/// use openai_responses::{Model, TypedRequestBuilder, ReasoningEffort, Modality};
+///
+/// // This will fail validation - O1 doesn't support vision
+/// let result = TypedRequestBuilder::new(Model::O1, "Analyze image")
+///     .modalities(vec![Modality::Image])
+///     .validate();
+///
+/// assert!(result.is_err());
+/// ```
 #[derive(Debug)]
 pub struct TypedRequestBuilder<State = Unvalidated> {
     request: CreateResponseRequest,
@@ -15,7 +107,27 @@ pub struct TypedRequestBuilder<State = Unvalidated> {
 }
 
 impl TypedRequestBuilder<Unvalidated> {
-    /// Create a new unvalidated request builder
+    /// Creates a new unvalidated request builder.
+    ///
+    /// This is the entry point for the type-state builder pattern.
+    /// The builder starts in the `Unvalidated` state and must be
+    /// validated before it can be built into a final request.
+    ///
+    /// # Examples
+    ///
+    /// ```rust
+    /// use openai_responses::{Model, TypedRequestBuilder};
+    ///
+    /// let builder = TypedRequestBuilder::new(
+    ///     Model::Gpt4_1Nano,
+    ///     "What is the capital of France?"
+    /// );
+    /// ```
+    ///
+    /// # Parameters
+    ///
+    /// * `model` - The [`Model`] to use for the request
+    /// * `input` - The input text or prompt
     pub fn new(model: Model, input: impl Into<String>) -> Self {
         Self {
             request: CreateResponseRequest::new(model, input),
@@ -23,14 +135,54 @@ impl TypedRequestBuilder<Unvalidated> {
         }
     }
 
-    /// Add instructions to the request
+    /// Adds system instructions to guide the model's behavior.
+    ///
+    /// Instructions provide context and guidelines for how the model
+    /// should respond to the input. They act as a system message.
+    ///
+    /// # Examples
+    ///
+    /// ```rust
+    /// use openai_responses::{Model, TypedRequestBuilder};
+    ///
+    /// let builder = TypedRequestBuilder::new(Model::Gpt4_1Nano, "Hello")
+    ///     .instructions("Be helpful and concise");
+    /// ```
+    ///
+    /// # Parameters
+    ///
+    /// * `instructions` - System instructions (can be any type that implements `Into<String>`)
     pub fn instructions(mut self, instructions: impl Into<String>) -> Self {
         self.request = self.request.with_instructions(instructions);
         self
     }
 
-    /// Set temperature with compile-time validation
-    pub fn temperature(mut self, temperature: f64) -> Result<Self, ValidationError> {
+    /// Sets the temperature parameter with validation.
+    ///
+    /// Temperature controls the randomness of the model's output.
+    /// Higher values make output more random, lower values more deterministic.
+    ///
+    /// # Examples
+    ///
+    /// ```rust
+    /// use openai_responses::{Model, TypedRequestBuilder};
+    ///
+    /// let builder = TypedRequestBuilder::new(Model::Gpt4_1Nano, "Hello")
+    ///     .temperature(0.7)?; // More creative
+    ///
+    /// let builder = TypedRequestBuilder::new(Model::Gpt4_1Nano, "Hello")
+    ///     .temperature(0.1)?; // More deterministic
+    /// ```
+    ///
+    /// # Parameters
+    ///
+    /// * `temperature` - Value between 0.0 and 2.0
+    ///
+    /// # Errors
+    ///
+    /// Returns [`ValidationError::InvalidTemperature`] if the value is outside
+    /// the valid range of 0.0 to 2.0.
+    pub fn temperature(mut self, temperature: f64) -> std::result::Result<Self, ValidationError> {
         if !(0.0..=2.0).contains(&temperature) {
             return Err(ValidationError::InvalidTemperature(temperature));
         }
