@@ -3,11 +3,15 @@ name = "openai-responses"
 version = "0.1.0"
 edition = "2021"
 authors = ["Your Name <your.email@example.com>"]
-description = "Rust SDK for OpenAI Responses API"
+description = "Type-safe, async Rust SDK for OpenAI Responses API with advanced features like SIMD JSON parsing, streaming, and zero-copy optimizations"
 license = "MIT"
 repository = "https://github.com/yourusername/openai-responses-rs"
+documentation = "https://docs.rs/openai-responses"
+homepage = "https://github.com/yourusername/openai-responses-rs"
+readme = "README.md"
 keywords = ["openai", "api", "ai", "responses", "sdk"]
 categories = ["api-bindings", "web-programming::http-client"]
+rust-version = "1.70"
 
 [dependencies]
 reqwest = { version = "0.12", features = ["json", "stream", "rustls-tls"], default-features = false }

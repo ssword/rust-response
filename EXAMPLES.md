@@ -39,6 +39,12 @@ cargo run --example 05_structured_output
 cargo run --example 06_web_search
 cargo run --example 07_file_search
 cargo run --example 08_reasoning
+
+# Rust-specific examples
+cargo run --example basic_usage
+cargo run --example async_example
+cargo run --example streaming
+cargo run --example rust_features_demo
 ```
 
 ### All Examples
@@ -89,42 +95,62 @@ let client = OpenAIClient::from_env_with_prefix("CUSTOM_OPENAI")?;
 ### 🧠 **Reasoning Examples**
 - **08_reasoning.rs**: Complex problem solving and strategic analysis
 
+### 🦀 **Rust-Specific Examples**
+- **basic_usage.rs**: Simple usage patterns and basic API calls
+- **async_example.rs**: Async/concurrent usage patterns
+- **streaming.rs**: Background processing and streaming responses
+- **rust_features_demo.rs**: Demonstration of Rust-specific features and optimizations
+
 ## 📝 Example Usage Patterns
 
 ### Basic Usage
+
 ```rust
-use openai_responses::OpenAIClient;
+use openai_responses::{OpenAIClient, Model};
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let client = OpenAIClient::from_env()?;
-    
+
     let response = client
-        .create_simple_response("gpt-4.1-nano", "Hello, world!")
+        .create_simple_response(Model::Gpt4_1Nano, "Hello, world!")
         .await?;
-    
+
     println!("Response: {}", response.get_text_output().unwrap_or_default());
     Ok(())
 }
 ```
 
 ### Advanced Builder Pattern
+
 ```rust
+use openai_responses::{Model, ReasoningEffort, Modality};
+
 let response = client
-    .create_response_builder("gpt-4.1-nano", "Your prompt here")
+    .create_response_builder(Model::Gpt4_1Nano, "Your prompt here")
     .temperature(0.7)
     .max_tokens(200)
     .instructions("System instructions here")
-    .with_tools(vec![tool1, tool2])
     .send()
+    .await?;
+
+// For reasoning models
+let reasoning_response = client
+    .create_response_builder(Model::O1, "Complex problem to solve")
+    .reasoning(ReasoningEffort::High)
+    .send_and_wait()
     .await?;
 ```
 
 ### Error Handling
+
 ```rust
-match client.create_simple_response("gpt-4.1-nano", "Hello").await {
+use openai_responses::{OpenAIError, Model};
+
+match client.create_simple_response(Model::Gpt4_1Nano, "Hello").await {
     Ok(response) => println!("Success: {}", response.id),
     Err(OpenAIError::Authentication(msg)) => eprintln!("Auth error: {}", msg),
+    Err(OpenAIError::RateLimit(msg)) => eprintln!("Rate limit: {}", msg),
     Err(e) => eprintln!("Error: {}", e),
 }
 ```
@@ -146,12 +172,16 @@ match client.create_simple_response("gpt-4.1-nano", "Hello").await {
 - ✅ Structured data extraction
 
 ### Rust-Specific Features
-- ✅ Async/await throughout
-- ✅ Proper error handling with `thiserror`
+- ✅ Async/await throughout with `tokio`
+- ✅ Type-safe Model enum with compile-time validation
+- ✅ Proper error handling with `thiserror` and `ValidationError`
 - ✅ Type-safe JSON serialization with `serde`
-- ✅ Configurable retry logic with `backon`
-- ✅ Environment variable configuration
-- ✅ Builder pattern API
+- ✅ Configurable retry logic with `backon` exponential backoff
+- ✅ Environment variable configuration with `from_env()`
+- ✅ Builder pattern API with fluent method chaining
+- ✅ Zero-copy parsing with `LazyResponse` and `RawValue`
+- ✅ Optional SIMD JSON parsing for performance
+- ✅ Streaming support with `futures::Stream`
 
 ## 🧪 Testing
 
