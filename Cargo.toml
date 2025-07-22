@@ -43,49 +43,61 @@ streaming = ["tokio-stream", "async-trait"]
 backend-abstraction = ["async-trait"]
 
 [[example]]
-name = "rust_features_demo"
-path = "examples/rust_features_demo.rs"
+name = "response_simple"
+path = "examples/response_simple.rs"
 
 [[example]]
-name = "basic_usage"
-path = "examples/basic_usage.rs"
+name = "response_basics"
+path = "examples/response_basics.rs"
 
 [[example]]
-name = "async_example"
-path = "examples/async_example.rs"
+name = "response_async_batch"
+path = "examples/response_async_batch.rs"
 
 [[example]]
-name = "streaming"
-path = "examples/streaming.rs"
+name = "response_streaming"
+path = "examples/response_streaming.rs"
 
 [[example]]
-name = "01_introduction"
-path = "examples/01_introduction.rs"
+name = "response_rust_features"
+path = "examples/response_rust_features.rs"
 
 [[example]]
-name = "02_text_prompting"
-path = "examples/02_text_prompting.rs"
+name = "response_text_generation"
+path = "examples/response_text_generation.rs"
 
 [[example]]
-name = "03_conversation_state"
-path = "examples/03_conversation_state.rs"
+name = "response_conversation"
+path = "examples/response_conversation.rs"
 
 [[example]]
-name = "04_function_calling"
-path = "examples/04_function_calling.rs"
+name = "response_function_calls"
+path = "examples/response_function_calls.rs"
 
 [[example]]
-name = "05_structured_output"
-path = "examples/05_structured_output.rs"
+name = "response_json_output"
+path = "examples/response_json_output.rs"
 
 [[example]]
-name = "06_web_search"
-path = "examples/06_web_search.rs"
+name = "response_web_search"
+path = "examples/response_web_search.rs"
 
 [[example]]
-name = "07_file_search"
-path = "examples/07_file_search.rs"
+name = "response_file_analysis"
+path = "examples/response_file_analysis.rs"
 
 [[example]]
-name = "08_reasoning"
-path = "examples/08_reasoning.rs"
+name = "response_reasoning"
+path = "examples/response_reasoning.rs"
+
+[[example]]
+name = "response_multimodal"
+path = "examples/response_multimodal.rs"
+
+[[example]]
+name = "response_model_validation"
+path = "examples/response_model_validation.rs"
+
+[[example]]
+name = "response_lazy_parsing"
+path = "examples/response_lazy_parsing.rs"

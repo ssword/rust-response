@@ -13,46 +13,56 @@ export OPENAI_API_KEY="your-api-key-here"
 
 | Example | Description | Key Features |
 |---------|-------------|--------------|
-| **01_introduction.rs** | Basic response creation and simple usage | Simple text generation, basic error handling |
-| **02_text_prompting.rs** | Advanced text prompting techniques | Temperature control, max tokens, system prompts |
-| **03_conversation_state.rs** | Multi-turn conversations with context | State management, role-based conversations |
-| **04_function_calling.rs** | Tool use and function calling | Weather, calculator, database simulation |
-| **05_structured_output.rs** | JSON schema validation and structured responses | Person profiles, recipes, sentiment analysis |
-| **06_web_search.rs** | Web search integration | Current events, market research, news summarization |
-| **07_file_search.rs** | File content analysis and search | Code review, documentation extraction, security scanning |
-| **08_reasoning.rs** | Complex reasoning and multi-step problems | Mathematical solving, ethical analysis, strategic planning |
+| **response_simple.rs** | Basic response creation and simple usage | Simple text generation, basic error handling |
+| **response_basics.rs** | Basic response patterns and API usage | Fundamental API calls, parameter tuning |
+| **response_text_generation.rs** | Advanced text prompting techniques | Temperature control, max tokens, system prompts |
+| **response_conversation.rs** | Multi-turn conversations with context | State management, role-based conversations |
+| **response_function_calls.rs** | Tool use and function calling | Weather, calculator, database simulation |
+| **response_json_output.rs** | JSON schema validation and structured responses | Person profiles, recipes, sentiment analysis |
+| **response_web_search.rs** | Web search integration | Current events, market research, news summarization |
+| **response_file_analysis.rs** | File content analysis and search | Code review, documentation extraction, security scanning |
+| **response_reasoning.rs** | Complex reasoning and multi-step problems | Mathematical solving, ethical analysis, strategic planning |
+| **response_multimodal.rs** | Multimodal capabilities | Text and image processing, vision tasks |
+| **response_model_validation.rs** | Model capability validation | Compile-time checks, runtime validation |
+| **response_lazy_parsing.rs** | Zero-copy response parsing | Performance optimization, memory efficiency |
+| **response_async_batch.rs** | Async/concurrent processing | Batch requests, concurrent execution |
+| **response_streaming.rs** | Real-time response streaming | Server-sent events, incremental processing |
+| **response_rust_features.rs** | Rust-specific features demonstration | Type safety, memory optimization, async patterns |
 
 ## 🚀 Running Examples
 
 ### Individual Examples
 ```bash
 # Basic examples
-cargo run --example 01_introduction
-cargo run --example 02_text_prompting
+cargo run --example response_simple
+cargo run --example response_basics
+cargo run --example response_text_generation
 
 # Advanced examples
-cargo run --example 03_conversation_state
-cargo run --example 04_function_calling
-cargo run --example 05_structured_output
+cargo run --example response_conversation
+cargo run --example response_function_calls
+cargo run --example response_json_output
 
 # Specialized examples
-cargo run --example 06_web_search
-cargo run --example 07_file_search
-cargo run --example 08_reasoning
+cargo run --example response_web_search
+cargo run --example response_file_analysis
+cargo run --example response_reasoning
+cargo run --example response_multimodal
 
-# Rust-specific examples
-cargo run --example basic_usage
-cargo run --example async_example
-cargo run --example streaming
-cargo run --example rust_features_demo
+# Performance and validation examples
+cargo run --example response_model_validation
+cargo run --example response_lazy_parsing
+cargo run --example response_async_batch
+cargo run --example response_streaming
+cargo run --example response_rust_features
 ```
 
 ### All Examples
 ```bash
 # Run all examples sequentially
-for i in {01..08}; do
-    echo "=== Running example $i ==="
-    cargo run --example "${i}_$(echo $i | sed 's/01/introduction/;s/02/text_prompting/;s/03/conversation_state/;s/04/function_calling/;s/05/structured_output/;s/06/web_search/;s/07/file_search/;s/08/reasoning/')"
+for example in response_simple response_basics response_text_generation response_conversation response_function_calls response_json_output response_web_search response_file_analysis response_reasoning response_multimodal response_model_validation response_lazy_parsing response_async_batch response_streaming response_rust_features; do
+    echo "=== Running $example ==="
+    cargo run --example "$example"
 done
 ```
 
@@ -80,26 +90,28 @@ let client = OpenAIClient::from_env_with_prefix("CUSTOM_OPENAI")?;
 ## 📊 Example Categories
 
 ### 🔰 **Beginner Examples**
-- **01_introduction.rs**: Perfect for first-time users
-- **02_text_prompting.rs**: Learn parameter tuning
+- **response_simple.rs**: Perfect for first-time users
+- **response_basics.rs**: Learn basic API patterns
+- **response_text_generation.rs**: Learn parameter tuning
 
 ### 🗣️ **Conversation Examples**
-- **03_conversation_state.rs**: Stateful conversations, context management
+- **response_conversation.rs**: Stateful conversations, context management
 
 ### 🛠️ **Advanced Features**
-- **04_function_calling.rs**: Tool integration and external APIs
-- **05_structured_output.rs**: JSON validation and data extraction
-- **06_web_search.rs**: Real-time information retrieval
-- **07_file_search.rs**: Document analysis and code review
+- **response_function_calls.rs**: Tool integration and external APIs
+- **response_json_output.rs**: JSON validation and data extraction
+- **response_web_search.rs**: Real-time information retrieval
+- **response_file_analysis.rs**: Document analysis and code review
 
 ### 🧠 **Reasoning Examples**
-- **08_reasoning.rs**: Complex problem solving and strategic analysis
+- **response_reasoning.rs**: Complex problem solving and strategic analysis
 
 ### 🦀 **Rust-Specific Examples**
-- **basic_usage.rs**: Simple usage patterns and basic API calls
-- **async_example.rs**: Async/concurrent usage patterns
-- **streaming.rs**: Background processing and streaming responses
-- **rust_features_demo.rs**: Demonstration of Rust-specific features and optimizations
+- **response_rust_features.rs**: Demonstration of Rust-specific features and optimizations
+- **response_async_batch.rs**: Async/concurrent usage patterns
+- **response_streaming.rs**: Background processing and streaming responses
+- **response_model_validation.rs**: Model capability validation
+- **response_lazy_parsing.rs**: Zero-copy parsing optimization
 
 ## 📝 Example Usage Patterns
 

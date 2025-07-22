@@ -148,26 +148,49 @@ Run the examples:
 
 ```bash
 # Basic usage
-cargo run --example basic_usage
+cargo run --example response_simple
+
+# Basic response patterns
+cargo run --example response_basics
 
 # Async/concurrent usage
-cargo run --example async_example
+cargo run --example response_async_batch
 
 # Background processing and streaming
-cargo run --example streaming
+cargo run --example response_streaming
 
 # Rust-specific features demonstration
-cargo run --example rust_features_demo
+cargo run --example response_rust_features
 
-# Tutorial examples (01-08)
-cargo run --example 01_introduction
-cargo run --example 02_text_prompting
-cargo run --example 03_conversation_state
-cargo run --example 04_function_calling
-cargo run --example 05_structured_output
-cargo run --example 06_web_search
-cargo run --example 07_file_search
-cargo run --example 08_reasoning
+# Text generation and prompting
+cargo run --example response_text_generation
+
+# Conversation management
+cargo run --example response_conversation
+
+# Function calling and tools
+cargo run --example response_function_calls
+
+# Structured JSON output
+cargo run --example response_json_output
+
+# Web search integration
+cargo run --example response_web_search
+
+# File analysis and search
+cargo run --example response_file_analysis
+
+# Advanced reasoning
+cargo run --example response_reasoning
+
+# Multimodal capabilities
+cargo run --example response_multimodal
+
+# Model validation
+cargo run --example response_model_validation
+
+# Lazy parsing optimization
+cargo run --example response_lazy_parsing
 ```
 
 ## Error Handling
