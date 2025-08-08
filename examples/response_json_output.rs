@@ -236,4 +236,4 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 }
 
 // Run this example with:
-// cargo run --example 05_structured_output
+// cargo run --example response_json_output
